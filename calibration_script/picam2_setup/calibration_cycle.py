@@ -47,7 +47,12 @@ while True:
     time_diff = abs(t1-t2)
     
     stitched_image = np.concatenate((img1, img2), axis=1)
-    cv2.imshow("img", stitched_image)
+
+    stitched_image = np.concatenate((img1, img2), axis=1)
+    if stitched_image.shape[1] > 1280:
+        stitched_image = cv2.resize(stitched_image, (1280, 480), interpolation=cv2.INTER_AREA)
+
+    cv2.imshow("Current Frame", stitched_image)
     key = cv2.waitKey(1) & 0xFF
     if key == ord("q"):
         break
