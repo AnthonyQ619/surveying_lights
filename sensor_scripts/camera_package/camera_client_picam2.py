@@ -27,7 +27,7 @@ def build_img_buf_stitched(stitched_image, t):
     
     time_buf = t.encode()
     time_buf_size = str(len(t)).zfill(2).encode()
-    img1_data = cv2.imencode('.png', img1)[1].tobytes()
+    img1_data = cv2.imencode('.png', stitched_image)[1].tobytes()
     img1_bufsize = str(len(img1_data)).encode()
     img1_bufCountsize = str(len(str(len(img1_data)))).zfill(2).encode()
         
@@ -35,8 +35,8 @@ def build_img_buf_stitched(stitched_image, t):
 
     return _msg
 
-height = int(sys.argv[1])
-width = int(sys.argv[2])
+width = int(sys.argv[1])
+height = int(sys.argv[2])
 cam_exposure = int(sys.argv[3])
 cam_gain = float(sys.argv[4])
 framerate = int(sys.argv[5])
@@ -71,6 +71,9 @@ if cam_gain >= minExp and cam_gain <= maxExp:
     picam2a.set_controls({"AeEnable" : False, "AnalogueGain": cam_gain, "ExposureTime":  cam_exposure})
     picam2b.set_controls({"AeEnable" : False, "AnalogueGain": cam_gain, "ExposureTime":  cam_exposure})
 
+picam2a.set_controls({"AeEnable" : False, "AnalogueGain": 6.0, "ExposureTime":  20000})
+picam2b.set_controls({"AeEnable" : False, "AnalogueGain": 6.0, "ExposureTime":  20000})
+time.sleep(0.5)
 picam2a.start() 
 picam2b.start()
 
@@ -94,7 +97,7 @@ while True:
     time_diff = abs(t1-t2)
     
     stitched_image = np.concatenate((img1, img2), axis=1)
-
+    print(stitched_image.shape)
     #_msg = build_img_buf(img1, img2, t)
     _msg = build_img_buf_stitched(stitched_image, t)
     
