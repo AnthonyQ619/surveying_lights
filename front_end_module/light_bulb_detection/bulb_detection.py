@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 
+
 class LightSourceDetector:
     def __init__(self, filterByColor = True, blobColor = 255, filterByArea = True, minArea = 70, maxArea=8000,
                  filterByCircularity = False, filterByConvexity = False, filterByInertia = False):
