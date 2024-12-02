@@ -4,7 +4,7 @@ import cv2
 import copy
 from scipy.stats import norm
 from scipy.optimize import curve_fit
-from google.colab.patches import cv2_imshow
+
 
 def csv_roi_reader(filename, lights=False):
   data = np.loadtxt(filename,
