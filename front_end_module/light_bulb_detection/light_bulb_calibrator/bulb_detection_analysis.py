@@ -3,10 +3,11 @@ import matplotlib.pyplot as plt
 import cv2
 from color_space_analysis import *
 from roi_selection import *
+import yaml
 
 def main():
   csv_file = "test_sample_rois_GS_1.csv"
-  image_path = "C:\\Users\\Anthony\\Documents\\Projects\\surveying_lights\\experiments\\sample_data\\left_camera\\"
+  image_path = "C:\\Users\\Anthony\\Documents\\Projects\\surveying_lights\\experiments\\sample_data\\right_camera\\"
 
   # Read Data
   data = csv_roi_reader(csv_file, True)
@@ -29,8 +30,17 @@ def main():
       roi_set_amber = get_roi(image_path + 'frame'+str(img_nums[i])+'.png', data[img_nums[i]]['amber'])
       roi_amber.append(roi_set_amber)
   print("######### AMBER ANALYSIS #########")
-  analyze_colorspace_thresh_ColorSpace(roi_amber, 'YCbCr')
+  data_amber = analyze_colorspace_thresh_ColorSpace(roi_amber, 'YCbCr')
+
+  print(data_amber)
 
   print("######### WHITE ANALYSIS #########")
-  analyze_colorspace_thresh_ColorSpace(roi_white, 'YCbCr')
+  data_white = analyze_colorspace_thresh_ColorSpace(roi_white, 'YCbCr')
+  print(data_white)
+
+  yaml_data = dict(White = data_white, Amber = data_amber)
+
+  with open("bulb_constraints.yaml", 'w') as outfile:
+    yaml.dump(yaml_data, outfile, default_flow_style=False)
+  
 main()

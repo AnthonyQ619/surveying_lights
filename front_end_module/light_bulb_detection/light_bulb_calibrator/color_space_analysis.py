@@ -1,9 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2
-import copy
-from scipy.stats import norm
-from scipy.optimize import curve_fit
 
 # Image Analysis Functions
 
@@ -143,13 +140,21 @@ def analyze_colorspace_thresh_ColorSpace(roi_sets, colorSpace, th = 0.0):
   axarr[1,2].set_title("Standard Deviation pixels of all channel")
   axarr[1,2].bar(channels, [h_std, s_std, v_std])
 
-  print("H, S, V (Means):",[h_mean, s_mean, v_mean])
-  print("H, S, V (Median):",[h_median, s_median, v_median])
-  print("H, S, V (Standard Deviation):",[h_std, s_std, v_std])
+  print(f"{channels[0]}, {channels[1]}, {channels[2]} (Means):",[h_mean, s_mean, v_mean])
+  print(f"{channels[0]}, {channels[1]}, {channels[2]} (Median):",[h_median, s_median, v_median])
+  print(f"{channels[0]}, {channels[1]}, {channels[2]} (Standard Deviation):",[h_std, s_std, v_std])
 
-  print("Range for " + channels[0] + ":",max(0, h_median - h_std), ",",  h_median + h_std)
-  print("Range for " + channels[1] + ":", max(0, s_median - s_std), ",",  s_median + s_std)
-  print("Range for " + channels[2] + ":", max(0, v_mean - v_std), ",",  v_mean + v_std)
+  print("Range for " + channels[0] + ":",max(0, h_median - h_std), ",",  min(255, h_median + h_std))
+  print("Range for " + channels[1] + ":", max(0, s_median - s_std), ",",  min(255, s_median + s_std))
+  print("Range for " + channels[2] + ":", max(0, v_mean - v_std), ",",  min(255, v_mean + v_std))
+  min_c1, max_c1 = max(0, h_median - h_std), min(255, h_median + h_std)
+  min_c2, max_c2 = max(0, s_median - s_std), min(255, s_median + s_std)
+  min_c3, max_c3 = max(0, v_mean - v_std),  min(255, v_mean + v_std)
+
+  plt.show()
+  return {channels[0]:{'MIN': float(min_c1), 'MAX': float(max_c1)}, 
+          channels[1]:{'MIN': float(min_c2), 'MAX': float(max_c2)}, 
+          channels[2]:{'MIN': float(min_c3), 'MAX': float(max_c3)}}
 
 
 def func(x, A, beta, B, mu, sigma):
@@ -270,9 +275,9 @@ def analyze_colorspace_thresh_HSV_Single(roi_set, frame):
     print("H, S, V (Median):",[h_median, s_median, v_median])
     print("H, S, V (Standard Deviation):",[h_std, s_std, v_std])
 
-    print("Range for H:",max(0, h_median - h_std), ",",  h_median + h_std)
-    print("Range for S:", max(0, s_median - s_std), ",",  s_median + s_std)
-    print("Range for V:", max(0, v_mean - v_std), ",",  v_mean + v_std)
+    print("Range for H:", max(0, h_median - h_std), ",",  min(255, h_median + h_std))
+    print("Range for S:", max(0, s_median - s_std), ",", min(255, s_median + s_std))
+    print("Range for V:", max(0, v_mean - v_std), ",",  min(255, v_mean + v_std))
 
     plot_ind += 2
     cv2.imshow(cv2.cvtColor(cv2.resize(img, (height*4, width*4)), cv2.COLOR_RGB2BGR))
