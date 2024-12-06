@@ -14,7 +14,7 @@ IMAGE_PATH = PATH + '/calibration_images'
 height = int(sys.argv[1])
 width = int(sys.argv[2])
 
-calib_dir = f'/calib_{height}_{width}_v3'
+calib_dir = f'/calib_{height}_{width}_capture'
 if not os.path.isdir(IMAGE_PATH + calib_dir):
     os.mkdir(IMAGE_PATH + calib_dir)
 IMAGE_PATH_CAL = IMAGE_PATH + calib_dir
@@ -30,12 +30,6 @@ picam2b.start()
 
 time.sleep(1) 
 
-count_repeat = [27, 37, 47]
-
-count = float(sys.argv[3])
-
-t1 = time.time()
-frame = 0
 frame_count = 0
 while True:
     array1 = picam2a.capture_array("main") 
@@ -43,9 +37,6 @@ while True:
     
     img1 = cv2.cvtColor(array1, cv2.COLOR_RGB2BGR)
     img2 = cv2.cvtColor(array2, cv2.COLOR_RGB2BGR)
-
-    t2 = time.time()
-    time_diff = abs(t1-t2)
     
     stitched_image = np.concatenate((img1, img2), axis=1)
 
@@ -58,17 +49,13 @@ while True:
     if key == ord("q"):
         break
     
-    frame += 1
-    if time_diff > count:
+    if key == ord("p"):
         frame_count += 1
-        print("#"*count_repeat[frame_count % 3])
-        print("Average framerate:", frame/count)
-        print('COUNT:', f"{frame_count} "*20)
+
+        print('COUNT:', frame_count)
         if not os.path.isdir(IMAGE_PATH_CAL + '/left_cam'):
             os.mkdir(IMAGE_PATH_CAL + '/left_cam')
         if not os.path.isdir(IMAGE_PATH_CAL + '/right_cam'):
             os.mkdir(IMAGE_PATH_CAL + '/right_cam')
         cv2.imwrite(IMAGE_PATH_CAL + '/left_cam/' + f'frame{frame_count}.png', img1)
         cv2.imwrite(IMAGE_PATH_CAL + '/right_cam/' + f'frame{frame_count}.png', img2)
-        frame = 0
-        t1 = t2
