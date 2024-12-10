@@ -128,7 +128,7 @@ class BulbSourceAnalyzer:
         (numLabels, labels, stats, centroids) = output
 
         # mask = np.zeros(dilated_img.shape, dtype="uint8")
-        f, axarr = plt.subplots(numLabels-1, 1, tight_layout=True, figsize=(25,25))
+        f, axarr = plt.subplots(numLabels, 1, tight_layout=True, figsize=(25,25))
         allMasks = []
         cc_sizes = []
 
@@ -203,7 +203,7 @@ class BulbSourceAnalyzer:
                 return (x, y)
         return poi
     
-    def detect_lightSources(self, video_data, n_frame = 60):
+    def detect_lightSources(self, video_data, roi_offset = 5, n_frame = 60):
         img = video_data[n_frame]
 
         # Fixed Kernel 
@@ -229,8 +229,8 @@ class BulbSourceAnalyzer:
           x, y = point.pt[:]
           rad = point.size / 2
 
-          topL_pt = (int(x - rad) - 5, int(y - rad) - 5)
-          botR_pt = (int(x + rad) + 5, int(y + rad) + 5)
+          topL_pt = (int(x - rad) - roi_offset, int(y - rad) - roi_offset)
+          botR_pt = (int(x + rad) + roi_offset, int(y + rad) + roi_offset)
 
           blob_img_spliced = blob_img[topL_pt[1]:botR_pt[1], topL_pt[0]:botR_pt[0]]
           estimated_corners = cv2.Canny(blob_img_spliced, 100, 200)

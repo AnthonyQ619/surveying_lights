@@ -5,6 +5,37 @@ import numpy as np
 from bulb_detection import LightSourceDetector, BulbSourceAnalyzer
 from light_corresponder import LightSourceCorrespondenceDetector
 
+# Matchinng point helper
+def showCaseLightSources(matchingPoints, imgL, imgR):
+  imgR_cv = cv2.cvtColor(imgR, cv2.COLOR_RGB2BGR)
+  imgL_cv = cv2.cvtColor(imgL, cv2.COLOR_RGB2BGR)
+  w = 20
+  h = 20
+  for i in range(len(matchingPoints)):
+    x = matchingPoints[i][0].pt[0]
+    y = matchingPoints[i][0].pt[1]
+
+    #imgGrayLeft = cv2.imread('irLeftImage157.png',cv2.IMREAD_GRAYSCALE)
+    label = 'Light:' + str(i)
+    text_color = (255,255,255)
+    (w1, h1), _ = cv2.getTextSize(
+          label, cv2.FONT_HERSHEY_SIMPLEX, 0.6, 1)
+
+    imgL_cv = cv2.rectangle(imgL_cv, (int(x-w/2),int(y-h/2)), (int(x+w/2),int(y+h/2)), (0,0,255), 2)
+    imgL_cv = cv2.rectangle(imgL_cv, (int(x)-6, int(y) - (h1+10)), (int(x)-6 + w1, int(y)), (0,0,255), -1)
+    imgL_cv = cv2.putText(imgL_cv, label, (int(x)-6, int(y) - 5),
+                      cv2.FONT_HERSHEY_SIMPLEX, 0.6, text_color, 1)
+
+    x = matchingPoints[i][1].pt[0]
+    y = matchingPoints[i][1].pt[1]
+
+    imgR_cv = cv2.rectangle(imgR_cv, (int(x-w/2),int(y-h/2)), (int(x+w/2),int(y+h/2)), (0,0,255), 2)
+    imgR_cv = cv2.rectangle(imgR_cv, (int(x)-6, int(y) - (h1+10)), (int(x)-6 + w1, int(y)), (0,0,255), -1)
+    imgR_cv = cv2.putText(imgR_cv, label, (int(x)-6, int(y) - 5),
+                      cv2.FONT_HERSHEY_SIMPLEX, 0.6, text_color, 1)
+  return imgL_cv, imgR_cv
+
+
 def video_reader_helper(video_file, n_frames = 80):
     cap = cv2.VideoCapture(video_file)
     all = []
@@ -51,14 +82,20 @@ def main():
     drawn_img_r = cv2.drawKeypoints(imgRGB_right, keypoints_r, 0, (0,0,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
 
     ld = BulbSourceAnalyzer(maxArea=150000, minArea=200, brf_filter=False, debug = False)
+    corr_detector = LightSourceCorrespondenceDetector((640, 480), (1096, 1440))
+    corr_detector.blob_matcher_stereo(keypoints_l, keypoints_r)
+    imgL, imgR = showCaseLightSources(corr_detector.matchingList, imgRGB_left, imgRGB_right)
+
     # ld = LightSourceDetector(maxArea=150000, minArea=100, brf_filter=True
 
-    kp, brf_points, brf_roi = ld.detect_lightSources(vid_data[60])
+    kp, brf_points, brf_roi = ld.detect_lightSources(vid_data[10])
 
     im_with_keypoints = cv2.drawKeypoints(vid_data[60], kp, 0, (0,0,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
     cv2.imshow("Frame Bulbs Left Image", drawn_img_l)
     cv2.imshow("Frame Bulbs Right Image", drawn_img_r)
     cv2.imshow("Frame Bulbs IR", im_with_keypoints)
+    cv2.imshow("Left Frame Matching Bulbs", imgL)
+    cv2.imshow("Right Frame Matching Bulbs", imgR)
     cv2.waitKey()
     print(vid_data.shape)
 

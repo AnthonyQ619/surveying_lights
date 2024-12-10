@@ -8,15 +8,19 @@ class LightSourceCorrespondenceDetector():
         self.stereo_res = stereo_res
         self.ids_res = ids_res
 
-        self.max_difference = 950
-        self.max_Xpixel_disparity = 30
-        self.max_Ypixel_disparity = 60
+        self.max_difference = 100
+        self.max_Xpixel_disparity = 25
+        self.max_Ypixel_disparity = 15
         self.matchingList = None
 
     def det_match_stereo(self, kpL_pt, kpR_pt):
-        if (abs(kpR_pt.size - kpL_pt.size) < self.max_difference and
-            (abs(kpR_pt.pt[0] - kpL_pt.pt[0]) < self.max_Xpixel_disparity and
-            abs(kpR_pt.pt[1] - kpL_pt.pt[1]) < self.max_Ypixel_disparity)):
+        if ((abs(kpR_pt.size - kpL_pt.size) < self.max_difference) and
+            (abs(kpR_pt.pt[0] - kpL_pt.pt[0]) < self.max_Ypixel_disparity) and
+            (abs(kpR_pt.pt[1] - kpL_pt.pt[1]) < self.max_Xpixel_disparity)):
+            print("SIZE Disparity", abs(kpR_pt.size - kpL_pt.size))
+            print("Y Disparity", abs(kpR_pt.pt[0] - kpL_pt.pt[0]))
+            print("X Disparity", abs(kpR_pt.pt[1] - kpL_pt.pt[1]))
+
             return True
         return False
 
