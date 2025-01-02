@@ -47,7 +47,7 @@ class NightTimeDetector():
         self.flann = cv.FlannBasedMatcher(index_params, search_params)
 
         if clahe:
-            self.clahe = cv.createCLAHE(clipLimit=6.0, tileGridSize=(8,8))
+            self.clahe = cv.createCLAHE(clipLimit=3.0, tileGridSize=(8,8))
 
     
     def preprocess_nightImage_hist(self, imgPath):
@@ -725,4 +725,4 @@ def main():
     # # Points 
     plt.show()
 
-main()
+# main()
